@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <%- include("header") %>
+    <body>
+        <div class="container">
+            <div class="mb-4">
+                <h1><%= pageTitle %></h1>
+                <a href="/blogs/create" class="btn btn-success">Create Blog</a>
+            </div>
+            <% blogs.forEach(blog => { %>
+                <div class="card mb-4">
+                    <div class="card-body">
+                      <h5 class="card-title"><a  href="/blogs/<%= blog.slug %>" title="<%= blog.title %>" class="card-link"><%= blog.title %></a></h5>
+                      <p class="card-text"><%= blog.body %></p>
+                      <a href="" class="btn btn-danger">Delete</a> 
+                    </div>
+                </div>
+            <% }) %>
+            <%- include("footer") %>
+        </div>
+    </body>
+</html>

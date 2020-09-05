@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <%- include("header") %>
+    <body>
+        <div class="container">
+            <h1><%= pageTitle %></h1>
+            <form method="post" action="/blogs">
+                <div class="form-group">
+                  <label for="blog-title">Title</label>
+                  <input type="text" class="form-control" name="blog-title" id="blog-title" placeholder="Blog title">
+                </div>
+                <div class="form-group">
+                  <label for="blog-body">Body</label>
+                  <textarea class="form-control" name="blog-body" id="blog-body" rows="3"></textarea>
+                </div>
+                <a href="/blogs" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <%- include("footer") %>
+        </div>
+    </body>
+</html>
