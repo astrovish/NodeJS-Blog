@@ -4,7 +4,7 @@
     <body>
         <div class="container">
             <h1><%= pageTitle %></h1>
-            <form method="post" action="/blogs">
+            <form method="post" action="/blogs/<%= blog.id %>?_method=PUT">
               <%- include("_form_fields") %>
             </form>
             <%- include("footer") %>

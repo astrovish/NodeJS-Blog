@@ -14,6 +14,7 @@
                         <h5 class="card-title"><a  href="/blogs/<%= blog.slug %>" title="<%= blog.title %>" class="card-link"><%= blog.title %></a></h5>
                         <p class="card-text"><%= blog.body %></p>
                         <a href="/blogs/<%= blog.slug %>" class="btn btn-primary">Read more</a>
+                        <a href="/blogs/edit/<%= blog.id %>" class="btn btn-info">Edit</a>
                         <form method="POST" action="/blogs/<%= blog.id %>?_method=DELETE" class="d-inline">
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>

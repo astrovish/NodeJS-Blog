@@ -11,7 +11,12 @@ const app = express();
 dotenv.config({path: "./config/config.env"});
 
 // connecting with database
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+mongoose.connect(process.env.DB_URI, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true, 
+    useCreateIndex: true,
+    useFindAndModify: false
+})
 .then(result => {
     console.log("Application successfully connected with database.");
 
@@ -38,22 +43,27 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({extended: false}));
 app.use(methodOverride("_method"));
 
-// setting routes
+// home page
 app.get("/", (req, res) => {
     res.render("index", {
         pageTitle: "Home Page"
     })
 });
 
-// page to create new blog
+// show create blog page
 app.get("/blogs/create", (req, res) => {
     res.render("create", {
-        pageTitle: "Create New Blog"
+        pageTitle: "Create New Blog",
+        actionParams: "",
+        blog: {title: "", body: ""}
     })
 })
 
-// submitting new blog here
-app.post("/blogs", (req, res) => {
+// submit newly created blog
+app.post("/blogs", (req, res, next) => {
+    // req.blog = new Blog()
+    // next()
+
     const blog = new Blog({
         title: req.body['blog-title'],
         body: req.body['blog-body'],
@@ -67,11 +77,12 @@ app.post("/blogs", (req, res) => {
     .catch(err => {
         res.status(500).send({message: `Following error occured while creating new blog: ${err}`});
     });
+// }, saveBlogAndRedirect());
 });
 
-// blog routes
+// show all blogs
 app.get("/blogs", (req, res) => {
-    Blog.find()
+    Blog.find().sort({_id: 1})
     .then(result => {
         res.render("blogs", {
             pageTitle: "All Blogs",
@@ -83,6 +94,7 @@ app.get("/blogs", (req, res) => {
     });
 });
 
+// show particular blog
 app.get("/blogs/:slug", (req, res) => {
     Blog.findOne({
         slug: req.params.slug
@@ -98,6 +110,44 @@ app.get("/blogs/:slug", (req, res) => {
     });
 });
 
+// edit a blog
+app.get("/blogs/edit/:id", async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id);
+        res.render("edit", {
+            pageTitle: `'${blog.title}': is ready for update.`,
+            blog
+        });
+    } catch(e) {
+        res.status(404).redirect("/404", {errMsg: e.message});
+    }
+})
+
+// update the blog
+app.put("/blogs/:id", async (req, res, next) => {
+/*  
+    try {
+        req.blog = await Blog.findById(req.params.id);
+        next();
+    } catch(e) {
+        res.redirect("/404", {errMsg: e.message});
+    }
+}, saveBlogAndRedirect())
+*/
+    try {
+        let blog = {
+            title: req.body['blog-title'],
+            body: req.body['blog-body'],
+            userId: 23
+        }
+        await Blog.findByIdAndUpdate(req.params.id, blog, {new: true})
+        res.redirect("/blogs");
+    } catch (e) {
+        res.send(e)
+    }
+});
+
+// delete a blog
 app.delete("/blogs/:id", async (req, res) => {
     await Blog.findByIdAndDelete(req.params.id);
     res.redirect("/blogs");
@@ -108,3 +158,29 @@ app.delete("/blogs/:id", async (req, res) => {
         console.log(`Err: ${err}`)
     })*/
 });
+
+// display 404 page: if no route is matched
+app.use((req, res) => {
+    res.status(404).render("404", {
+        pageTitle: "OOPS!!! Page Not Found.",
+        errMsg: ''
+    })
+})
+
+function saveBlogAndRedirect() {
+    return async (req, res) => {
+        let blog = req.blog;
+
+        blog.title = req.body.title;
+        blog.body = req.body.body;
+        blog.userId = 23;
+
+        try {
+            blog = await blog.save();
+            res.redirect('/blogs');
+        } catch(e) {
+            res.send(e.message)
+            // res.redirect('/404')
+        }
+    }
+}
