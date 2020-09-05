@@ -7,15 +7,22 @@
                 <h1><%= pageTitle %></h1>
                 <a href="/blogs/create" class="btn btn-success">Create Blog</a>
             </div>
-            <% blogs.forEach(blog => { %>
+            <% if( blogs.length ) {
+                blogs.forEach(blog => { %>
                 <div class="card mb-4">
                     <div class="card-body">
-                      <h5 class="card-title"><a  href="/blogs/<%= blog.slug %>" title="<%= blog.title %>" class="card-link"><%= blog.title %></a></h5>
-                      <p class="card-text"><%= blog.body %></p>
-                      <a href="" class="btn btn-danger">Delete</a> 
+                        <h5 class="card-title"><a  href="/blogs/<%= blog.slug %>" title="<%= blog.title %>" class="card-link"><%= blog.title %></a></h5>
+                        <p class="card-text"><%= blog.body %></p>
+                        <a href="/blogs/<%= blog.slug %>" class="btn btn-primary">Read more</a>
+                        <form method="POST" action="/blogs/<%= blog.id %>?_method=DELETE" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
                     </div>
                 </div>
-            <% }) %>
+            <% }) 
+            } else { %>
+              <div class="">No blog found.</div>  
+            <% } %>
             <%- include("footer") %>
         </div>
     </body>

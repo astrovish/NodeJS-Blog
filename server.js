@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const Blog = require("./models/blog");
 
@@ -35,6 +36,7 @@ app.use(express.static(__dirname + "/public"));
 
 // parse request of content-Type - application/x-www-form-urlencoded
 app.use(express.urlencoded({extended: false}));
+app.use(methodOverride("_method"));
 
 // setting routes
 app.get("/", (req, res) => {
@@ -96,7 +98,13 @@ app.get("/blogs/:slug", (req, res) => {
     });
 });
 
-app.delete("/blogs/:id", (req, res) => {
-    Blog.findByIdAndDelete(req.params.id);
+app.delete("/blogs/:id", async (req, res) => {
+    await Blog.findByIdAndDelete(req.params.id);
     res.redirect("/blogs");
+    /*.then(result => {
+        res.redirect("/blogs");
+    })
+    .catch(err => {
+        console.log(`Err: ${err}`)
+    })*/
 });
